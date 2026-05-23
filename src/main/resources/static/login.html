@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingresar — Prode Mundial 2026</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="auth-body">
+<div class="auth-box">
+  <div class="auth-logo">⚽</div>
+  <h1 class="auth-title">Prode Mundial 2026</h1>
+  <p class="auth-sub">Iniciá sesión para cargar tus pronósticos</p>
+
+  <div id="errorMsg" class="alert alert-danger" style="display:none"></div>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="tu@email.com" autofocus>
+  </div>
+  <div class="form-group">
+    <label>Contraseña</label>
+    <input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+  </div>
+  <button class="btn btn-green btn-block" id="loginBtn" onclick="doLogin()">Ingresar</button>
+
+  <p class="auth-link">¿No tenés cuenta? <a href="/register.html">Registrate gratis</a></p>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  if (localStorage.getItem('token')) window.location.href = '/index.html';
+
+  async function doLogin() {
+    const btn = document.getElementById('loginBtn');
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const err = document.getElementById('errorMsg');
+    err.style.display = 'none';
+
+    if (!email || !password) { showErr('Completá todos los campos.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Ingresando...';
+    try {
+      const data = await api.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ id: data.userId, name: data.name, email: data.email, admin: data.admin }));
+      window.location.href = '/index.html';
+    } catch (e) {
+      showErr(e.message || 'Error al ingresar.');
+      btn.disabled = false;
+      btn.textContent = 'Ingresar';
+    }
+  }
+
+  function showErr(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>
