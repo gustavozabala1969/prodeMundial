@@ -62,7 +62,7 @@ public class Match {
     private List<Prediction> predictions;
 
     public enum Phase {
-        GROUP, ROUND_OF_32, QUARTER, SEMI, FINAL
+        GROUP, F1, F2, F3, ROUND_OF_32, ROUND_OF_16, QUARTER, SEMI, TERCERO, FINAL
     }
 
     public enum MatchStatus {
