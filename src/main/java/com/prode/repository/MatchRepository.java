@@ -8,4 +8,5 @@ import java.util.List;
 public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findByPhaseOrderByMatchDateAscMatchTimeAsc(Phase phase);
     List<Match> findAllByOrderByMatchDateAscMatchTimeAsc();
+    List<Match> findByPhaseInOrderByMatchDateAscMatchTimeAsc(List<Phase> phases);
 }

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
   }
   loadGroupMatches();
+  loadFechaTopePredictions("GROUP");
 });
 
 // ---- NAV ----
@@ -85,6 +86,7 @@ function renderStats() {
   `;
 }
 
+/*
 function renderMatches() {
   const container = document.getElementById('matchesContainer');
   // Agrupar por grupo
@@ -99,6 +101,54 @@ function renderMatches() {
     html += `<div class="group-header">Grupo ${group}</div>`;
     matches.forEach(m => { html += renderMatchCard(m); });
   });
+  container.innerHTML = html;
+}
+*/
+
+function renderMatches() {
+  const container = document.getElementById('matchesContainer');
+
+  // Agrupar por grupo
+  const groups = {};
+
+  allMatches.forEach(m => {
+    if (!groups[m.groupName]) {
+      groups[m.groupName] = [];
+    }
+    groups[m.groupName].push(m);
+  });
+
+  let html = '';
+
+  Object.entries(groups).forEach(([group, matches]) => {
+
+    html += `
+      <div class="group-section">
+        <div class="group-header">Grupo ${group}</div>
+
+        <div class="group-columns">
+    `;
+
+    // Crear columnas de 2 partidos
+    for (let i = 0; i < matches.length; i += 2) {
+
+      html += `<div class="match-column">`;
+
+      html += renderMatchCard(matches[i]);
+
+      if (matches[i + 1]) {
+        html += renderMatchCard(matches[i + 1]);
+      }
+
+      html += `</div>`;
+    }
+
+    html += `
+        </div>
+      </div>
+    `;
+  });
+
   container.innerHTML = html;
 }
 
@@ -133,32 +183,32 @@ function renderMatchCard(m) {
     </div>
     <div class="match-row">
       <div class="team">
-        <span class="team-flag">${m.homeFlag}</span>
         <span class="team-name">${m.homeTeam}</span>
       </div>
       <div class="score-zone">
-        <input class="score-input" type="number" min="0" max="30"
+        <input class="score-input" type="number" min="0" max="3"
           id="h-${m.id}" value="${predHome}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
         <span class="score-vs">-</span>
-        <input class="score-input" type="number" min="0" max="30"
+        <input class="score-input" type="number" min="0" max="3"
           id="a-${m.id}" value="${predAway}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
       </div>
       <div class="team right">
-        <span class="team-flag">${m.awayFlag}</span>
         <span class="team-name">${m.awayTeam}</span>
       </div>
     </div>
     ${finished ? `<div style="text-align:center;font-size:13px;color:#888;margin-top:-4px">${realScore}</div>` : ''}
     ${!finished ? `
     <div class="save-btn-row">
+      <span class="team-flag">${m.homeFlag}</span>
       <small style="color:#999;font-size:12px">${hasPred ? 'Pronóstico guardado' : 'Sin pronóstico aún'}</small>
       <button class="btn btn-green btn-sm" id="btn-${m.id}" onclick="savePred(${m.id})">
         ${hasPred ? '✏️ Actualizar' : '💾 Guardar'}
       </button>
+      <span class="team-flag">${m.awayFlag}</span>
     </div>` : ''}
   </div>`;
 }
@@ -354,7 +404,7 @@ async function loadAdminMatches() {
   try {
     const matches = await api.get('/api/admin/matches');
     // Agrupar por fase
-    const phases = { GROUP: 'Fase de grupos', ROUND_OF_32: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', FINAL: 'Final' };
+    const phases = { GROUP: 'Fase de grupos', ROUND_OF_32: 'Dieciseisavos', OCTAVOS: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', FINAL: 'Final' };
     const grouped = {};
     matches.forEach(m => {
       if (!grouped[m.phase]) grouped[m.phase] = [];
@@ -414,6 +464,21 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
 }
 
+function formatearDateTime(dateTimeStr) {
+
+  if (!dateTimeStr) return '';
+  const fechaTexto = dateTimeStr;
+  const fecha = fechaTexto.replace('T', ' ');
+  const partes = fecha.split(' ');
+  const fechaPartes = partes[0].split('-');
+  const fechaFormateada =
+    fechaPartes[2] + '/' +
+    fechaPartes[1] + '/' +
+    fechaPartes[0] + ' ' +
+    partes[1];
+  return fechaFormateada;
+}
+
 function esc(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -429,4 +494,14 @@ function showToast(msg, type = 'success') {
   el.className = 'toast show ' + type;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+async function loadFechaTopePredictions(phase) {
+  try {
+    const url = "/api/predictions/tope?phase=" + phase;
+    const fechaTopePrediction = await api.get(url);
+    document.getElementById('fechaTopeGrupo').innerText = formatearDateTime(fechaTopePrediction.fechaTopePrediction);
+  } catch (e) {
+    showToast('Error cargar fecha tope: ' + e.message, 'error');
+  }
 }

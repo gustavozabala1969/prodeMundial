@@ -20,7 +20,7 @@ public class Match {
     @Column(name = "group_name", nullable = false, length = 10)
     private String groupName;
 
-    /** Fase: GROUP, ROUND_OF_32, QUARTER, SEMI, FINAL */
+    /** Fase: GROUP (F1, F2, F3), ROUND_OF_32, OCTAVOS, QUARTER, SEMI, TERCERO, FINAL */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -62,7 +62,7 @@ public class Match {
     private List<Prediction> predictions;
 
     public enum Phase {
-        GROUP, F1, F2, F3, ROUND_OF_32, ROUND_OF_16, QUARTER, SEMI, TERCERO, FINAL
+        GROUP, F1, F2, F3, ROUND_OF_32, OCTAVOS, QUARTER, SEMI, TERCERO, FINAL
     }
 
     public enum MatchStatus {

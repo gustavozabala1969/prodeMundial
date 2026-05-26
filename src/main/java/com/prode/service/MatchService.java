@@ -26,7 +26,14 @@ public class MatchService {
 
     /** Partidos de fase de grupos con pronóstico del usuario */
     public List<MatchResponse> getGroupMatches(Long userId) {
-        List<Match> matches = matchRepository.findByPhaseOrderByMatchDateAscMatchTimeAsc(Phase.GROUP);
+        List<Match> matches = matchRepository.findByPhaseInOrderByMatchDateAscMatchTimeAsc(
+        List.of(Match.Phase.F1, Match.Phase.F2, Match.Phase.F3));
+        Map<Long, Prediction> userPreds = getUserPredMap(userId);
+        return matches.stream().map(m -> toResponse(m, userPreds.get(m.getId()))).toList();
+    }
+
+    public List<MatchResponse> getGroupMatchesPorFecha(Long userId, Phase fase) {
+        List<Match> matches = matchRepository.findByPhaseOrderByMatchDateAscMatchTimeAsc(fase);
         Map<Long, Prediction> userPreds = getUserPredMap(userId);
         return matches.stream().map(m -> toResponse(m, userPreds.get(m.getId()))).toList();
     }
@@ -47,8 +54,8 @@ public class MatchService {
         if (match.getStatus() == MatchStatus.FINISHED) {
             throw new IllegalStateException("El partido ya terminó. No se puede modificar el pronóstico.");
         }
-        if (match.getPhase() != Phase.GROUP) {
-            throw new IllegalStateException("Solo se pueden cargar pronósticos de la fase de grupos.");
+        if (!(match.getPhase() == Phase.F1 || match.getPhase()==Phase.F2 || match.getPhase()==Phase.F3)) {
+            throw new IllegalStateException("Solo se pueden cargar pronósticos de la fase de grupos (fecha 1, 2 y 3).");
         }
 
         User user = userRepository.findById(userId)

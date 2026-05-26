@@ -1,6 +1,9 @@
 package com.prode.controller;
 
 import com.prode.dto.*;
+import com.prode.entity.FechaTopePrediction;
+import com.prode.entity.Match.Phase;
+import com.prode.repository.FechaTopeRepository;
 import com.prode.repository.UserRepository;
 import com.prode.service.MatchService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -21,6 +25,7 @@ public class MatchController {
 
     private final MatchService matchService;
     private final UserRepository userRepository;
+    private final FechaTopeRepository fechaTopeRepository;
 
     /** Partidos fase de grupos con mi pronóstico */
     @GetMapping("/matches/group")
@@ -47,6 +52,16 @@ public class MatchController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    /** Buscar Fecha Tope para pronosticar */
+    @GetMapping("/predictions/tope")
+    public ResponseEntity<FechaTopePrediction> fechaTopePrediction(
+            @RequestParam Phase phase) {
+
+        return fechaTopeRepository.findById(phase)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /** Ranking general en tiempo real */
