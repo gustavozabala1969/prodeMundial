@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +57,20 @@ public class MatchController {
     }
 
     /** Buscar Fecha Tope para pronosticar */
-    @GetMapping("/predictions/tope")
+    @GetMapping("/predictions/tope/{phase}")
     public ResponseEntity<FechaTopePrediction> fechaTopePrediction(
-            @RequestParam Phase phase) {
+        @AuthenticationPrincipal UserDetails userDetails,
+        @PathVariable String phase) {
 
         return fechaTopeRepository.findById(phase)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /** Buscar Fecha Tope para pronosticar */
+    @GetMapping("/predictions/fechasTopes")
+    public ResponseEntity<List<FechaTopePrediction>> getFechasTopesPrediction() {
+        return ResponseEntity.ok(fechaTopeRepository.findAll());
     }
 
     /** Ranking general en tiempo real */

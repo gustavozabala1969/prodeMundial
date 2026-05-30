@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -18,6 +19,7 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final PredictionRepository predictionRepository;
     private final UserRepository userRepository;
+    private final FechaTopeRepository fechaTopeRepository;
 
     // Constantes de puntos
     public static final int POINTS_EXACT  = 3;
@@ -48,12 +50,28 @@ public class MatchService {
     /** Guardar o actualizar pronóstico (solo si el partido no terminó) */
     @Transactional
     public void savePrediction(Long userId, SavePredictionRequest req) {
+
+
         Match match = matchRepository.findById(req.getMatchId())
                 .orElseThrow(() -> new IllegalArgumentException("Partido no encontrado."));
 
         if (match.getStatus() == MatchStatus.FINISHED) {
             throw new IllegalStateException("El partido ya terminó. No se puede modificar el pronóstico.");
         }
+
+        FechaTopePrediction fechaTope = fechaTopeRepository
+            .findById(match.getPhase().name())
+            .orElseThrow(() -> new IllegalStateException(
+                    "No existe fecha tope para fase " + match.getPhase().name()
+            ));
+
+        LocalDateTime fechaTopePrediccion = fechaTope.getFechaTopePrediction();
+        if (LocalDateTime.now().isAfter(fechaTopePrediccion)) {
+            throw new IllegalStateException(
+                "La fecha límite para pronosticar esta fase ya venció."
+            );
+        }
+
         if (!(match.getPhase() == Phase.F1 || match.getPhase()==Phase.F2 || match.getPhase()==Phase.F3)) {
             throw new IllegalStateException("Solo se pueden cargar pronósticos de la fase de grupos (fecha 1, 2 y 3).");
         }

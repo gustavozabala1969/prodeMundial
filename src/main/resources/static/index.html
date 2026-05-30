@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prode Mundial 2026</title>
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/vencimientos.css">
 </head>
 <body>
 
@@ -26,13 +27,21 @@
       <button class="tab admin-only" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
     </div>
 
-    <div>
-      <h4>Fecha Hora límite para cargar pronósticos es: <span id="fechaTopeGrupo"></span></h4>
-    </div>
-
     <!-- PRONÓSTICOS -->
     <div id="tab-pronosticos" class="tab-content mt-1">
       <div class="stats-grid" id="statsGrid"></div>
+      <div class="deadline-container">
+          ⏳ <strong>Fechas límite para pronósticos</strong>&nbsp;
+          <button class="btn fecha1 btn-sm" id="btn-vencF1" onclick="">
+            <small>Fecha 1 --</small><span id="vencF1">dd/mm/yyyy hh:mm</span>
+          </button>
+          <button class="btn fecha2 btn-sm" id="btn-vencF2" onclick="">
+            <small>Fecha 2 --</small><span id="vencF2">dd/mm/yyyy hh:mm</span>
+          </button>
+          <button class="btn fecha3 btn-sm" id="btn-vencF3" onclick="">
+            <small>Fecha 3 --</small><span id="vencF3">dd/mm/yyyy hh:mm</span>
+          </button>
+      </div>
       <div id="matchesContainer"></div>
     </div>
 

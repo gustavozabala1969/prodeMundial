@@ -5,6 +5,8 @@
 let currentUser = null;
 let currentTab  = 'pronosticos';
 let allMatches  = [];
+let allGrupos  = [];
+let allFechasTopes  = [];
 let pendingSaves = {};   // matchId -> {home, away}
 
 // ---- INIT ----
@@ -23,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
   }
   loadGroupMatches();
-  loadFechaTopePredictions("GROUP");
+  // loadFechaTopePredictions("GROUP");
+  loadFechasTopes();
+  // await mostrarFechaTopePredictions("GROUP");
 });
 
 // ---- NAV ----
@@ -84,6 +88,8 @@ function renderStats() {
     <div class="stat-card"><div class="stat-num">${finished}</div><div class="stat-lbl">jugados</div></div>
     <div class="stat-card"><div class="stat-num">${myPts}</div><div class="stat-lbl">mis puntos</div></div>
   `;
+
+  mostrarFechaTopePredictions("GROUP");
 }
 
 /*
@@ -150,6 +156,7 @@ function renderMatches() {
   });
 
   container.innerHTML = html;
+  mostrarFechaTopePredictions("GROUP");
 }
 
 function renderMatchCard(m) {
@@ -170,15 +177,22 @@ function renderMatchCard(m) {
     ? `<strong>${m.homeScore} - ${m.awayScore}</strong> <small style="color:#888">(resultado real)</small>`
     : '';
 
+  const phase = `${m.phase}`;
+  const fecha = `<strong>Fecha ${m.phase}</strong>`;
+
   const predHome = hasPred ? m.myPredHome : '';
   const predAway = hasPred ? m.myPredAway : '';
 
-  const disabledAttr = finished ? 'disabled' : '';
+  const fechaTope = allFechasTopes.find(f => f.phase === m.phase)?.fechaTopePrediction;
+  const vencido = fechaTope && new Date() > new Date(fechaTope);
+  const disabledAttr = finished || vencido ? 'disabled' : '';
+  const buttonDisabled = finished || vencido ? 'disabled' : '';
 
   return `
   <div class="match-card ${finished ? 'finished' : ''}" id="card-${m.id}">
     <div class="match-meta">
       <span>📅 ${formatDate(m.matchDate)} ${m.matchTime}hs</span>
+      <span class="texto-${m.phase}">${fecha}</span>
       <span>${ptsHtml}</span>
     </div>
     <div class="match-row">
@@ -186,12 +200,12 @@ function renderMatchCard(m) {
         <span class="team-name">${m.homeTeam}</span>
       </div>
       <div class="score-zone">
-        <input class="score-input" type="number" min="0" max="3"
+        <input class="score-input" type="number" min="0" max="20"
           id="h-${m.id}" value="${predHome}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
         <span class="score-vs">-</span>
-        <input class="score-input" type="number" min="0" max="3"
+        <input class="score-input" type="number" min="0" max="20"
           id="a-${m.id}" value="${predAway}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
@@ -203,12 +217,16 @@ function renderMatchCard(m) {
     ${finished ? `<div style="text-align:center;font-size:13px;color:#888;margin-top:-4px">${realScore}</div>` : ''}
     ${!finished ? `
     <div class="save-btn-row">
-      <span class="team-flag">${m.homeFlag}</span>
+      ${false ? `<span class="team-flag">${m.homeFlag}</span>` : ''}
       <small style="color:#999;font-size:12px">${hasPred ? 'Pronóstico guardado' : 'Sin pronóstico aún'}</small>
-      <button class="btn btn-green btn-sm" id="btn-${m.id}" onclick="savePred(${m.id})">
-        ${hasPred ? '✏️ Actualizar' : '💾 Guardar'}
+      <button class="btn btn-green btn-sm" id="btn-${m.id}" onclick="savePred(${m.id})" ${buttonDisabled}>
+        ${vencido
+          ? '⛔ Cerrado'
+          : hasPred
+            ? '✏️ Actualizar'
+            : '💾 Guardar'}
       </button>
-      <span class="team-flag">${m.awayFlag}</span>
+      ${false ? `<span class="team-flag">${m.awayFlag}</span>` : ''}
     </div>` : ''}
   </div>`;
 }
@@ -404,7 +422,7 @@ async function loadAdminMatches() {
   try {
     const matches = await api.get('/api/admin/matches');
     // Agrupar por fase
-    const phases = { GROUP: 'Fase de grupos', ROUND_OF_32: 'Dieciseisavos', OCTAVOS: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', FINAL: 'Final' };
+    const phases = { F1: 'Fecha 1', F2: 'Fecha 2', F3: 'Fecha 3', GROUP: 'Fase de grupos', ROUND_OF_32: 'Dieciseisavos', OCTAVOS: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', TERCERO: 'Tercero', FINAL: 'Final' };
     const grouped = {};
     matches.forEach(m => {
       if (!grouped[m.phase]) grouped[m.phase] = [];
@@ -498,10 +516,44 @@ function showToast(msg, type = 'success') {
 
 async function loadFechaTopePredictions(phase) {
   try {
-    const url = "/api/predictions/tope?phase=" + phase;
-    const fechaTopePrediction = await api.get(url);
-    document.getElementById('fechaTopeGrupo').innerText = formatearDateTime(fechaTopePrediction.fechaTopePrediction);
+    if (phase == "GROUP") {
+      const url = "/api/predictions/tope/" + phase;
+      const fechaTopePrediction = await api.get(url);
+      //const url = "/api/predictions/tope/" + phase;
+      //const fechaTopePrediction = await api.get(url);
+      //const url = "/api/predictions/tope/" + phase;
+      //const fechaTopePrediction = await api.get(url);
+      document.getElementById('fechaTopeGrupo').innerText = formatearDateTime(fechaTopePrediction.fechaTopePrediction);
+    }
   } catch (e) {
     showToast('Error cargar fecha tope: ' + e.message, 'error');
+  }
+}
+
+function mostrarFechaTopePredictions(phase) {
+  try {
+    if (phase === "GROUP") {
+      const fechaTopeF1 = allFechasTopes.find(f => f.phase === "F1")?.fechaTopePrediction;
+      document.getElementById('vencF1').innerText = formatearDateTime(fechaTopeF1);
+      //console.log("fechaTopeF1:" + fechaTopeF1);
+      const fechaTopeF2 = allFechasTopes.find(f => f.phase === "F2")?.fechaTopePrediction;
+      document.getElementById('vencF2').innerText = formatearDateTime(fechaTopeF2);
+      const fechaTopeF3 = allFechasTopes.find(f => f.phase === "F3")?.fechaTopePrediction;
+      document.getElementById('vencF3').innerText = formatearDateTime(fechaTopeF3);
+      //const textoFechaTope = "Fecha 1: " + formatearDateTime(fechaTopeF1) + "  - Fecha 2:" + formatearDateTime(fechaTopeF2) + "  - Fecha 3:" + formatearDateTime(fechaTopeF3);
+      //document.getElementById('fechaTopeGrupo').innerText = textoFechaTope;
+    }
+  } catch (e) {
+    showToast('Error cargar fecha tope: ' + e.message, 'error');
+  }
+}
+
+async function loadFechasTopes() {
+  try {
+    allFechasTopes = await api.get('/api/predictions/fechasTopes');
+    //renderStats();
+    //renderMatches();
+  } catch (e) {
+    showToast('Error cargando las fechas topes: ' + e.message, 'error');
   }
 }
