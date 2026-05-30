@@ -98,6 +98,14 @@ public class MatchController {
         return ResponseEntity.ok(matchService.compare(myId, otherId));
     }
 
+    /** Comparar mis pronósticos con otro usuario */
+    @GetMapping("/comparePronosticado/{otherId}")
+    public ResponseEntity<List<CompareEntry>> comparePronosticado(@AuthenticationPrincipal UserDetails userDetails,
+                                                       @PathVariable Long otherId) {
+        Long myId = getUserId(userDetails);
+        return ResponseEntity.ok(matchService.comparePronosticado(myId, otherId));
+    }
+
     // ---- ADMIN ----
 
     @PostMapping("/admin/result")

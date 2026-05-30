@@ -346,6 +346,20 @@ async function loadCompare() {
   }
 }
 
+async function loadComparePronosticado() {
+  const otherId = document.getElementById('compareSelect').value;
+  const container = document.getElementById('compareContainer');
+  if (!otherId) return;
+  container.innerHTML = '<div class="loading">Cargando comparación...</div>';
+  try {
+    const data = await api.get('/api/comparePronosticado/' + otherId);
+    const otherName = document.getElementById('compareSelect').selectedOptions[0].text;
+    renderCompare(data, otherName);
+  } catch(e) {
+    container.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+  }
+}
+
 function renderCompare(data, otherName) {
   const container = document.getElementById('compareContainer');
   if (!data.length) {
@@ -368,7 +382,7 @@ function renderCompare(data, otherName) {
     else if (r.myPoints !== null)        rowCls = 'win-tie';
 
     return `<tr class="${rowCls}">
-      <td class="match-col">${r.homeFlag}${r.homeTeam} vs ${r.awayFlag}${r.awayTeam}</td>
+      <td class="match-col">P.${r.matchId} - ${r.homeFlag}${r.homeTeam} vs ${r.awayFlag}${r.awayTeam}</td>
       <td style="color:var(--green);font-weight:600">${r.realHome}-${r.realAway}</td>
       <td>${myPred}</td>
       <td><span class="result-badge badge-${myPts}">${myPts === 3 ? '🎯 3' : myPts === 1 ? '✅ 1' : myPts === 0 ? '❌ 0' : '-'}</span></td>
@@ -422,7 +436,7 @@ async function loadAdminMatches() {
   try {
     const matches = await api.get('/api/admin/matches');
     // Agrupar por fase
-    const phases = { F1: 'Fecha 1', F2: 'Fecha 2', F3: 'Fecha 3', GROUP: 'Fase de grupos', ROUND_OF_32: 'Dieciseisavos', OCTAVOS: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', TERCERO: 'Tercero', FINAL: 'Final' };
+    const phases = { F1: 'Fecha 1', F2: 'Fecha 2', F3: 'Fecha 3', GROUP: 'Fase de grupos', ROUND_OF_32: 'Dieciseisavos', ROUND_OF_16: 'Octavos', QUARTER: 'Cuartos', SEMI: 'Semifinales', TERCERO: 'Tercero', FINAL: 'Final' };
     const grouped = {};
     matches.forEach(m => {
       if (!grouped[m.phase]) grouped[m.phase] = [];
@@ -556,4 +570,14 @@ async function loadFechasTopes() {
   } catch (e) {
     showToast('Error cargando las fechas topes: ' + e.message, 'error');
   }
+}
+
+function countryCodeToFlag(code) {
+  if (!code) return '';
+  
+  return code
+    .toUpperCase()
+    .replace(/./g, char =>
+      String.fromCodePoint(127397 + char.charCodeAt())
+    );
 }

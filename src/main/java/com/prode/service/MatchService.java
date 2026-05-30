@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -168,6 +169,73 @@ public class MatchService {
         }
         return result;
     }
+
+    /** Comparar pronósticos entre dos usuarios (partidos finalizados o pronosticados con cierre) */
+    public List<CompareEntry> comparePronosticado(Long myId, Long otherId) {
+        Map<Long, Prediction> myPreds    = getUserPredMap(myId);
+        Map<Long, Prediction> otherPreds = getUserPredMap(otherId);
+
+        Map<String, LocalDateTime> fechasTopes =
+            fechaTopeRepository.findAll()
+            .stream()
+            .collect(Collectors.toMap(
+                    FechaTopePrediction::getPhase,
+                    FechaTopePrediction::getFechaTopePrediction
+            ));
+
+        LocalDateTime ahora = LocalDateTime.now();
+
+        List<Match> matches = matchRepository
+            .findAllByOrderByMatchDateAscMatchTimeAsc()
+            .stream()
+            .filter(m -> {
+
+                boolean terminado = m.getStatus() == MatchStatus.FINISHED;
+
+                LocalDateTime fechaTope = fechasTopes.get(m.getPhase().name());
+
+                boolean vencido =
+                        fechaTope != null &&
+                        fechaTope.isBefore(ahora);
+
+                return terminado || vencido;
+
+            })
+            .toList();
+
+
+        List<CompareEntry> result = new ArrayList<>();
+        for (Match m : matches) {
+            CompareEntry e = new CompareEntry();
+            e.setMatchId(m.getId());
+            e.setHomeTeam(m.getHomeTeam());
+            e.setHomeFlag(m.getHomeFlag());
+            e.setAwayTeam(m.getAwayTeam());
+            e.setAwayFlag(m.getAwayFlag());
+            e.setRealHome(m.getHomeScore());
+            e.setRealAway(m.getAwayScore());
+            e.setMatchDate(m.getMatchDate() != null ? m.getMatchDate().toString() : "");
+            e.setGroupName(m.getGroupName());
+            e.setPhase(m.getPhase().name());
+
+            Prediction myP = myPreds.get(m.getId());
+            if (myP != null) {
+                e.setMyHome(myP.getHomeScore());
+                e.setMyAway(myP.getAwayScore());
+                e.setMyPoints(myP.getPoints());
+            }
+
+            Prediction otherP = otherPreds.get(m.getId());
+            if (otherP != null) {
+                e.setOtherHome(otherP.getHomeScore());
+                e.setOtherAway(otherP.getAwayScore());
+                e.setOtherPoints(otherP.getPoints());
+            }
+            result.add(e);
+        }
+        return result;
+    }
+
 
     // ---- Helpers ----
 
