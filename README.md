@@ -64,7 +64,7 @@ La app arranca en → http://localhost:8080
 
 Al arrancar por primera vez, se crean automáticamente:
 - **48 partidos** de fase de grupos + eliminatorias
-- **Usuario admin**: `admin@prode.com` / `admin123`
+- **Usuario admin**: `admin@prode.com` / `Gz......`
 
 ⚠️ Cambiá la contraseña del admin después del primer login.
 

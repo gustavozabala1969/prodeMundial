@@ -43,7 +43,7 @@ public class Match {
 
     @Column(name = "match_time", length = 10)
     @Builder.Default
-    private String matchTime = "18:00";
+    private String matchTime = "16:00";
 
     @Column(name = "home_score")
     private Integer homeScore;

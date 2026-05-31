@@ -382,8 +382,8 @@ function renderCompare(data, otherName) {
     else if (r.myPoints !== null)        rowCls = 'win-tie';
 
     return `<tr class="${rowCls}">
-      <td class="match-col">P.${r.matchId} - ${r.homeFlag}${r.homeTeam} vs ${r.awayFlag}${r.awayTeam}</td>
-      <td style="color:var(--green);font-weight:600">${r.realHome}-${r.realAway}</td>
+      <td class="match-col">P${r.matchId}. ${r.phase} - ${r.homeFlag}${r.homeTeam} vs ${r.awayFlag}${r.awayTeam}</td>
+      <td style="color:var(--green);font-weight:600">${r.realHome ==null ? 'Pendiente' : `${r.realHome} -${r.realAway}`}</td>
       <td>${myPred}</td>
       <td><span class="result-badge badge-${myPts}">${myPts === 3 ? '🎯 3' : myPts === 1 ? '✅ 1' : myPts === 0 ? '❌ 0' : '-'}</span></td>
       <td>${otherPred}</td>

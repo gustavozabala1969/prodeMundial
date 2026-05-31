@@ -3,8 +3,10 @@ package com.prode.config;
 import com.prode.entity.Match;
 import com.prode.entity.Match.Phase;
 import com.prode.entity.User;
+import com.prode.entity.FechaTopePrediction;
 import com.prode.repository.MatchRepository;
 import com.prode.repository.UserRepository;
+import com.prode.repository.FechaTopeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -21,12 +24,14 @@ public class DataInitializer implements CommandLineRunner {
 
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
+    private final FechaTopeRepository fechaTopeRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
         createAdminIfNotExists();
         createMatchesIfNotExists();
+        createFechaTopesPredictions();
     }
 
     private void createAdminIfNotExists() {
@@ -34,12 +39,87 @@ public class DataInitializer implements CommandLineRunner {
             User admin = User.builder()
                     .name("Administrador")
                     .email("admin@prode.com")
-                    .password(passwordEncoder.encode("admin123"))
+                    .password(passwordEncoder.encode("Gzmundial"))
                     .admin(true)
                     .build();
             userRepository.save(admin);
-            log.info("Admin creado: admin@prode.com / admin123");
+            log.info("Admin creado: admin@prode.com / Gz.....");
         }
+    }
+
+    private void createFechaTopesPredictions() {
+        if (fechaTopeRepository.count() > 0) return;
+
+        FechaTopePrediction fechaTopeGroup = FechaTopePrediction.builder()
+                .phase("GROUP")
+                .fechaTopePrediction(LocalDateTime.parse("2026-06-11T15:50:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeGroup);
+        log.info("Fecha Tope Predictions GROUP - 2026-06-11 15:50:00");
+
+        FechaTopePrediction fechaTopeF1 = FechaTopePrediction.builder()
+                .phase("F1")
+                .fechaTopePrediction(LocalDateTime.parse("2026-06-11T15:50:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeF1);
+        log.info("Fecha Tope Predictions F1 - 2026-06-11 15:50:00");
+
+        FechaTopePrediction fechaTopeF2 = FechaTopePrediction.builder()
+                .phase("F2")
+                .fechaTopePrediction(LocalDateTime.parse("2026-06-18T12:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeF2);
+        log.info("Fecha Tope Predictions F2 - 2026-06-18 12:00:00");
+
+        FechaTopePrediction fechaTopeF3 = FechaTopePrediction.builder()
+                .phase("F3")
+                .fechaTopePrediction(LocalDateTime.parse("2026-06-24T15:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeF3);
+        log.info("Fecha Tope Predictions F3 - 2026-06-24 15:00:00");
+
+        FechaTopePrediction fechaTopeR32 = FechaTopePrediction.builder()
+                .phase("ROUND_OF_32")
+                .fechaTopePrediction(LocalDateTime.parse("2026-06-28T15:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeR32);
+        log.info("Fecha Tope Predictions ROUND_OF_32 - 2026-06-28 15:00:00");
+
+        FechaTopePrediction fechaTopeR16 = FechaTopePrediction.builder()
+                .phase("ROUND_OF_16")
+                .fechaTopePrediction(LocalDateTime.parse("2026-07-04T13:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeR16);
+        log.info("Fecha Tope Predictions ROUND_OF_16 - 2026-07-04 13:00:00");
+
+        FechaTopePrediction fechaTopeR8 = FechaTopePrediction.builder()
+                .phase("QUARTER")
+                .fechaTopePrediction(LocalDateTime.parse("2026-07-09T16:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeR8);
+        log.info("Fecha Tope Predictions QUARTER - 2026-07-09 16:00:00");
+
+        FechaTopePrediction fechaTopeR4 = FechaTopePrediction.builder()
+                .phase("SEMI")
+                .fechaTopePrediction(LocalDateTime.parse("2026-07-14T15:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeR4);
+        log.info("Fecha Tope Predictions SEMI - 2026-07-14 15:00:00");
+
+        FechaTopePrediction fechaTopeTercero = FechaTopePrediction.builder()
+                .phase("TERCERO")
+                .fechaTopePrediction(LocalDateTime.parse("2026-07-18T17:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeTercero);
+        log.info("Fecha Tope Predictions TERCERO - 2026-07-18 17:00:00");
+
+        FechaTopePrediction fechaTopeFinal = FechaTopePrediction.builder()
+                .phase("FINAL")
+                .fechaTopePrediction(LocalDateTime.parse("2026-07-19T15:00:00"))
+                .build();
+        fechaTopeRepository.save(fechaTopeFinal);
+        log.info("Fecha Tope Predictions FINAL - 2026-07-19 15:00:00");
+
     }
 
     private void createMatchesIfNotExists() {
@@ -56,92 +136,92 @@ public class DataInitializer implements CommandLineRunner {
             m("A", Phase.F3, "Sudáfrica",     "🇿🇦", "Corea del Sur",  "🇰🇷", "2026-06-24", "22:00"),
             
             // Grupo B
-            m("B", Phase.F1, "Canadá",                  "🇨🇦", "Bosnia y Herzegovina", "🇧🇦", "2026-06-12", "16:00"),
-            m("B", Phase.F1, "Qatar",                   "🇶🇦", "Suiza",                 "🇨🇭", "2026-06-13", "16:00"),
-            m("B", Phase.F2, "Canadá",                  "🇨🇦", "Qatar",                 "🇶🇦", "2026-06-17", "16:00"),
-            m("B", Phase.F2, "Bosnia y Herzegovina",    "🇧🇦", "Suiza",                 "🇨🇭", "2026-06-17", "19:00"),
-            m("B", Phase.F3, "Suiza",                  "🇨🇭", "Canadá",                 "🇨🇦", "2026-06-22", "16:00"),
-            m("B", Phase.F3, "Bosnia y Herzegovina",    "🇧🇦", "Qatar",                 "🇶🇦", "2026-06-22", "16:00"),
+            m("B", Phase.F1, "Canadá",  "🇨🇦", "Bosnia y Herzegovina", "🇧🇦", "2026-06-12", "16:00"),
+            m("B", Phase.F1, "Qatar",   "🇶🇦", "Suiza",       "🇨🇭", "2026-06-13", "16:00"),
+            m("B", Phase.F2, "Suiza",    "🇨🇭", "Bosnia y Herzegovina", "🇧🇦", "2026-06-18", "16:00"),
+            m("B", Phase.F2, "Canadá",  "🇨🇦", "Qatar",       "🇶🇦", "2026-06-18", "19:00"),
+            m("B", Phase.F3, "Suiza",   "🇨🇭", "Canadá",  "🇨🇦", "2026-06-22", "16:00"),
+            m("B", Phase.F3, "Bosnia y Herzegovina",    "🇧🇦", "Qatar", "🇶🇦", "2026-06-22", "16:00"),
 
             // Grupo C
             m("C", Phase.F1, "Brasil",    "🇧🇷", "Marruecos", "🇲🇦", "2026-06-13", "19:00"),
             m("C", Phase.F1, "Haití",     "🇭🇹", "Escocia",   "🏴", "2026-06-13", "22:00"),
-            m("C", Phase.F2, "Brasil",    "🇧🇷", "Haití",     "🇭🇹", "2026-06-18", "19:00"),
-            m("C", Phase.F2, "Marruecos", "🇲🇦", "Escocia",   "🏴", "2026-06-18", "22:00"),
+            m("C", Phase.F2, "Escocia", "🏴", "Marruecos",   "🇲🇦", "2026-06-19", "19:00"),
+            m("C", Phase.F2, "Brasil",    "🇧🇷", "Haití",     "🇭🇹", "2026-06-19", "21:30"),
             m("C", Phase.F3, "Escocia",    "🏴", "Brasil",   "🇧🇷 ", "2026-06-24", "19:00"),
             m("C", Phase.F3, "Marruecos", "🇲🇦", "Haití",     "🇭🇹", "2026-06-24", "19:00"),
 
             // Grupo D
-            m("D", Phase.F1, "EE.UU.",    "🇺🇸", "Paraguay",  "🇵🇾", "2026-06-14", "16:00"),
-            m("D", Phase.F1, "Australia", "🇦🇺", "Turquía",   "🇹🇷", "2026-06-14", "19:00"),
+            m("D", Phase.F1, "EE.UU.",    "🇺🇸", "Paraguay",  "🇵🇾", "2026-06-12", "22:00"),
+            m("D", Phase.F1, "Australia", "🇦🇺", "Turquía",   "🇹🇷", "2026-06-14", "01:00"),
             m("D", Phase.F2, "EE.UU.",    "🇺🇸", "Australia", "🇦🇺", "2026-06-19", "16:00"),
-            m("D", Phase.F2, "Paraguay",  "🇵🇾", "Turquía",   "🇹🇷", "2026-06-19", "19:00"),
+            m("D", Phase.F2, "Turquía",  "🇹🇷", "Paraguay",   "🇵🇾", "2026-06-20", "00:00"),
             m("D", Phase.F3, "Turquía",    "🇹🇷", "EE.UU.",   "🇺🇸", "2026-06-25", "23:00"),
             m("D", Phase.F3, "Paraguay",  "🇵🇾", "Australia", "🇦🇺", "2026-06-25", "23:00"),
 
             // Grupo E
-            m("E", Phase.F1, "Alemania",         "🇩🇪", "Curazao",          "🇨🇼", "2026-06-15", "16:00"),
-            m("E", Phase.F1, "Costa de Marfil", "🇨🇮", "Ecuador",          "🇪🇨", "2026-06-15", "19:00"),
-            m("E", Phase.F2, "Alemania",         "🇩🇪", "Costa de Marfil", "🇨🇮", "2026-06-20", "16:00"),
-            m("E", Phase.F2, "Curazao",          "🇨🇼", "Ecuador",          "🇪🇨", "2026-06-20", "19:00"),
-            m("E", Phase.F3, "Ecuador",         "🇪🇨", "Alemania",          "🇩🇪", "2026-06-25", "17:00"),
+            m("E", Phase.F1, "Alemania",         "🇩🇪", "Curazao",          "🇨🇼", "2026-06-14", "14:00"),
+            m("E", Phase.F1, "Costa de Marfil", "🇨🇮", "Ecuador",          "🇪🇨", "2026-06-15", "20:00"),
+            m("E", Phase.F2, "Alemania",         "🇩🇪", "Costa de Marfil", "🇨🇮", "2026-06-20", "17:00"),
+            m("E", Phase.F2, "Ecuador",          "🇪🇨", "Curazao",          "🇨🇼", "2026-06-20", "21:00"),
             m("E", Phase.F3, "Curazao",  "🇨🇼", "Costa de Marfil", "🇨🇮", "2026-06-25", "17:00"),            
-
+            m("E", Phase.F3, "Ecuador",         "🇪🇨", "Alemania", "🇩🇪", "2026-06-25", "17:00"),
+            
             // Grupo F
-            m("F", Phase.F1, "Países Bajos", "🇳🇱", "Japón",   "🇯🇵", "2026-06-16", "16:00"),
-            m("F", Phase.F1, "Suecia",       "🇸🇪", "Túnez",   "🇹🇳", "2026-06-16", "19:00"),
-            m("F", Phase.F2, "Países Bajos", "🇳🇱", "Suecia",  "🇸🇪", "2026-06-21", "16:00"),
-            m("F", Phase.F2, "Japón",        "🇯🇵", "Túnez",   "🇹🇳", "2026-06-21", "19:00"),
-            m("F", Phase.F3, "Túnez", "🇹🇳", "Países Bajos",   "🇳🇱", "2026-06-26", "20:00"),
-            m("F", Phase.F3, "Japón",        "🇯🇵", "Suecia",  "🇸🇪", "2026-06-26", "20:00"),
-
+            m("F", Phase.F1, "Países Bajos", "🇳🇱", "Japón",   "🇯🇵", "2026-06-14", "17:00"),
+            m("F", Phase.F1, "Suecia",       "🇸🇪", "Túnez",   "🇹🇳", "2026-06-16", "23:00"),
+            m("F", Phase.F2, "Países Bajos", "🇳🇱", "Suecia",  "🇸🇪", "2026-06-20", "14:00"),
+            m("F", Phase.F2, "Túnez",        "🇹🇳", "Japón",   "🇯🇵", "2026-06-21", "01:00"),
+            m("F", Phase.F3, "Japón",        "🇯🇵", "Suecia",  "🇸🇪", "2026-06-25", "20:00"),
+            m("F", Phase.F3, "Túnez", "🇹🇳", "Países Bajos",   "🇳🇱", "2026-06-25", "20:00"),
+            
             // Grupo G
-            m("G", Phase.F1, "Bélgica",       "🇧🇪", "Egipto",        "🇪🇬", "2026-06-17", "16:00"),
-            m("G", Phase.F1, "Irán",          "🇮🇷", "Nueva Zelanda", "🇳🇿", "2026-06-17", "19:00"),
-            m("G", Phase.F2, "Bélgica",       "🇧🇪", "Irán",          "🇮🇷", "2026-06-22", "16:00"),
-            m("G", Phase.F2, "Egipto",        "🇪🇬", "Nueva Zelanda", "🇳🇿", "2026-06-22", "19:00"),
-            m("G", Phase.F3, "Nueva Zelanda",       "🇳🇿", "Bélgica", "🇧🇪", "2026-06-27", "16:00"),
-            m("G", Phase.F3, "Egipto",        "🇪🇬", "Irán",          "🇮🇷", "2026-06-27", "16:00"),
-
+            m("G", Phase.F1, "Bélgica",       "🇧🇪", "Egipto",        "🇪🇬", "2026-06-15", "16:00"),
+            m("G", Phase.F1, "Irán",          "🇮🇷", "Nueva Zelanda", "🇳🇿", "2026-06-15", "22:00"),
+            m("G", Phase.F2, "Bélgica",       "🇧🇪", "Irán",          "🇮🇷", "2026-06-21", "16:00"),
+            m("G", Phase.F2, "Nueva Zelanda",        "🇳🇿", "Egipto", "🇪🇬", "2026-06-21", "22:00"),
+            m("G", Phase.F3, "Egipto",        "🇪🇬", "Irán",          "🇮🇷", "2026-06-27", "00:00"),
+            m("G", Phase.F3, "Nueva Zelanda",       "🇳🇿", "Bélgica", "🇧🇪", "2026-06-27", "00:00"),
+            
             // Grupo H
-            m("H", Phase.F1, "España",          "🇪🇸", "Cabo Verde",      "🇨🇻", "2026-06-18", "16:00"),
-            m("H", Phase.F1, "Arabia Saudita",  "🇸🇦", "Uruguay",         "🇺🇾", "2026-06-18", "19:00"),
-            m("H", Phase.F2, "España",          "🇪🇸", "Arabia Saudita",  "🇸🇦", "2026-06-23", "16:00"),
-            m("H", Phase.F2, "Cabo Verde",      "🇨🇻", "Uruguay",         "🇺🇾", "2026-06-23", "19:00"),
-            m("H", Phase.F3, "Uruguay",          "🇺🇾", "España",         "🇪🇸", "2026-06-28", "16:00"),
-            m("H", Phase.F3, "Cabo Verde",      "🇨🇻", "Arabia Saudita",  "🇸🇦", "2026-06-28", "16:00"),
-
+            m("H", Phase.F1, "España",          "🇪🇸", "Cabo Verde",      "🇨🇻", "2026-06-15", "13:00"),
+            m("H", Phase.F1, "Arabia Saudita",  "🇸🇦", "Uruguay",         "🇺🇾", "2026-06-15", "19:00"),
+            m("H", Phase.F2, "España",          "🇪🇸", "Arabia Saudita",  "🇸🇦", "2026-06-21", "13:00"),
+            m("H", Phase.F2, "Uruguay",      "🇺🇾", "Cabo Verde",         "🇨🇻", "2026-06-21", "19:00"),
+            m("H", Phase.F3, "Cabo Verde",      "🇨🇻", "Arabia Saudita",  "🇸🇦", "2026-06-26", "21:00"),
+            m("H", Phase.F3, "Uruguay",          "🇺🇾", "España",         "🇪🇸", "2026-06-26", "21:00"),
+            
             // Grupo I
-            m("I", Phase.F1, "Francia",  "🇫🇷", "Senegal", "🇸🇳", "2026-06-19", "16:00"),
-            m("I", Phase.F1, "Irak",     "🇮🇶", "Noruega", "🇳🇴", "2026-06-19", "19:00"),
-            m("I", Phase.F2, "Francia",  "🇫🇷", "Irak",    "🇮🇶", "2026-06-24", "16:00"),
-            m("I", Phase.F2, "Senegal",  "🇸🇳", "Noruega", "🇳🇴", "2026-06-24", "19:00"),
-            m("I", Phase.F3, "Francia",  "🇫🇷", "Noruega", "🇳🇴", "2026-06-29", "16:00"),
-            m("I", Phase.F3, "Senegal",  "🇸🇳", "Irak",    "🇮🇶", "2026-06-29", "16:00"),
+            m("I", Phase.F1, "Francia",  "🇫🇷", "Senegal", "🇸🇳", "2026-06-16", "16:00"),
+            m("I", Phase.F1, "Irak",     "🇮🇶", "Noruega", "🇳🇴", "2026-06-16", "19:00"),
+            m("I", Phase.F2, "Francia",  "🇫🇷", "Irak",    "🇮🇶", "2026-06-22", "18:00"),
+            m("I", Phase.F2, "Noruega",  "🇳🇴", "Senegal", "🇸🇳", "2026-06-22", "21:00"),
+            m("I", Phase.F3, "Noruega",  "🇳🇴", "Francia", "🇫🇷", "2026-06-26", "16:00"),
+            m("I", Phase.F3, "Senegal",  "🇸🇳", "Irak",    "🇮🇶", "2026-06-26", "16:00"),
 
             // Grupo J
-            m("J", Phase.F1, "Argentina", "🇦🇷", "Argelia", "🇩🇿", "2026-06-20", "16:00"),
-            m("J", Phase.F1, "Austria",   "🇦🇹", "Jordania","🇯🇴", "2026-06-20", "19:00"),
-            m("J", Phase.F2, "Argentina", "🇦🇷", "Austria", "🇦🇹", "2026-06-25", "16:00"),
-            m("J", Phase.F2, "Argelia",   "🇩🇿", "Jordania","🇯🇴", "2026-06-25", "19:00"),
-            m("J", Phase.F3, "Jordania", "🇯🇴", "Argentina","🇦🇷", "2026-06-30", "16:00"),
-            m("J", Phase.F3, "Argelia",   "🇩🇿", "Austria", "🇦🇹", "2026-06-30", "16:00"),
-
+            m("J", Phase.F1, "Argentina", "🇦🇷", "Argelia", "🇩🇿", "2026-06-16", "22:00"),
+            m("J", Phase.F1, "Austria",   "🇦🇹", "Jordania","🇯🇴", "2026-06-17", "01:00"),
+            m("J", Phase.F2, "Argentina", "🇦🇷", "Austria", "🇦🇹", "2026-06-22", "14:00"),
+            m("J", Phase.F2, "Jordania",   "🇯🇴", "Argelia","🇩🇿", "2026-06-23", "00:00"),
+            m("J", Phase.F3, "Argelia",   "🇩🇿", "Austria", "🇦🇹", "2026-06-27", "23:00"),
+            m("J", Phase.F3, "Jordania", "🇯🇴", "Argentina","🇦🇷", "2026-06-27", "23:00"),
+            
             // Grupo K
-            m("K", Phase.F1, "Portugal",    "🇵🇹", "Congo",      "🇨🇬", "2026-06-21", "16:00"),
-            m("K", Phase.F1, "Uzbekistán",  "🇺🇿", "Colombia",   "🇨🇴", "2026-06-21", "19:00"),
-            m("K", Phase.F2, "Portugal",    "🇵🇹", "Uzbekistán", "🇺🇿", "2026-06-26", "16:00"),
-            m("K", Phase.F2, "Congo",       "🇨🇬", "Colombia",   "🇨🇴", "2026-06-26", "19:00"),
-            m("K", Phase.F3, "Colombia",    "🇨🇴", "Portugal",   "🇵🇹", "2026-07-01", "16:00"),
-            m("K", Phase.F3, "Congo",       "🇨🇬", "Uzbekistán", "🇺🇿", "2026-07-01", "16:00"),
+            m("K", Phase.F1, "Portugal",    "🇵🇹", "Congo",      "🇨🇬", "2026-06-17", "14:00"),
+            m("K", Phase.F1, "Uzbekistán",  "🇺🇿", "Colombia",   "🇨🇴", "2026-06-17", "23:00"),
+            m("K", Phase.F2, "Portugal",    "🇵🇹", "Uzbekistán", "🇺🇿", "2026-06-23", "14:00"),
+            m("K", Phase.F2, "Colombia",       "🇨🇴", "Congo",   "🇨🇬", "2026-06-23", "23:00"),
+            m("K", Phase.F3, "Colombia",    "🇨🇴", "Portugal",   "🇵🇹", "2026-06-27", "20:30"),
+            m("K", Phase.F3, "Congo",       "🇨🇬", "Uzbekistán", "🇺🇿", "2026-06-27", "20:30"),
 
             // Grupo L
-            m("L", Phase.F1, "Inglaterra", "🏴", "Croacia", "🇭🇷", "2026-06-22", "16:00"),
-            m("L", Phase.F1, "Ghana",      "🇬🇭", "Panamá",  "🇵🇦", "2026-06-22", "19:00"),
-            m("L", Phase.F2, "Inglaterra", "🏴", "Ghana",   "🇬🇭", "2026-06-27", "16:00"),
-            m("L", Phase.F2, "Croacia",    "🇭🇷", "Panamá",  "🇵🇦", "2026-06-27", "19:00"),
-            m("L", Phase.F3, "Panamá", "🇵🇦", "Inglaterra",  "🏴", "2026-07-02", "16:00"),
-            m("L", Phase.F3, "Croacia",    "🇭🇷", "Ghana",   "🇬🇭", "2026-07-02", "16:00"),
+            m("L", Phase.F1, "Inglaterra", "🏴", "Croacia", "🇭🇷", "2026-06-17", "17:00"),
+            m("L", Phase.F1, "Ghana",      "🇬🇭", "Panamá",  "🇵🇦", "2026-06-17", "20:00"),
+            m("L", Phase.F2, "Inglaterra", "🏴", "Ghana",   "🇬🇭", "2026-06-23", "17:00"),
+            m("L", Phase.F2, "Panamá",    "🇵🇦", "Croacia",  "🇭🇷", "2026-06-23", "20:00"),
+            m("L", Phase.F3, "Panamá", "🇵🇦", "Inglaterra",  "🏴", "2026-06-27", "18:00"),
+            m("L", Phase.F3, "Croacia",    "🇭🇷", "Ghana",   "🇬🇭", "2026-06-27", "18:00"),
 
             // ===== ELIMINACIÓN DIRECTA (sin equipos definidos aún) =====
             me("R32-P73",  Phase.ROUND_OF_32, "2A",   "", "2B", "", "2026-06-28", "16:00"),
