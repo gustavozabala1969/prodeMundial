@@ -191,29 +191,49 @@ function renderMatchCard(m) {
   return `
   <div class="match-card ${finished ? 'finished' : ''}" id="card-${m.id}">
     <div class="match-meta">
-      <span>📅 ${formatDate(m.matchDate)} ${m.matchTime}hs</span>
+      <span>📅 ${formatDate(m.matchDate)} ${m.matchTime} hs</span>
       <span class="texto-${m.phase}">${fecha}</span>
       <span>${ptsHtml}</span>
     </div>
+    <!--
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+    -->
+
     <div class="match-row">
-      <div class="team">
-        <span class="team-name">${m.homeTeam}</span>
+
+      <div class="team team-home">
+        <span class="team-name">
+          <small>${m.homeTeam}</small>
+        </span>
+
+        <span class="fi fi-${m.homeFlag} team-flag-img"></span>
       </div>
+
       <div class="score-zone">
         <input class="score-input" type="number" min="0" max="20"
           id="h-${m.id}" value="${predHome}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
+
         <span class="score-vs">-</span>
+
         <input class="score-input" type="number" min="0" max="20"
           id="a-${m.id}" value="${predAway}" placeholder="0"
           ${disabledAttr}
           onchange="markChanged(${m.id})">
+
       </div>
-      <div class="team right">
-        <span class="team-name">${m.awayTeam}</span>
+
+      <div class="team team-away">
+        <span class="fi fi-${m.awayFlag} team-flag-img"></span>
+
+        <span class="team-name">
+          <small>${m.awayTeam}</small>
+        </span>
       </div>
+
     </div>
+
     ${finished ? `<div style="text-align:center;font-size:13px;color:#888;margin-top:-4px">${realScore}</div>` : ''}
     ${!finished ? `
     <div class="save-btn-row">

@@ -1,0 +1,29 @@
+.compare-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.compare-actions select {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+  .compare-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .compare-actions select,
+  .compare-actions button {
+    width: 100%;
+  }
+
+  .compare-actions button {
+    justify-content: center;
+  }
+}

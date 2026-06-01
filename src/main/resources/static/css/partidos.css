@@ -21,3 +21,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.fi {
+    position: relative;
+    display: inline-block;
+    width: 1.333333em;
+    line-height: 1em;
+    background-size: contain;
+    background-position: 50%;
+    background-repeat: no-repeat;
+}
+
+.fiAntes {
+    position: relative;
+    display: inline-block;
+    width: 1.333333em;
+    line-height: 1em;
+}
+.fib, .fi {
+    background-size: contain;
+    background-position: 50%;
+    background-repeat: no-repeat;
+}

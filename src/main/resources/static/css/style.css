@@ -226,13 +226,13 @@ input:focus, select:focus {
   color: var(--muted);
   margin-bottom: 10px;
 }
-.match-row {
+.match-rowXX {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
 }
-.team {
+.teamXX {
   flex: 1;
   display: flex;
   align-items: center;
@@ -243,14 +243,60 @@ input:focus, select:focus {
 .team-flag { font-size: 24px; flex-shrink: 0; }
 .team-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* estilos nuevos */
+.match-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+/*  width: 120px; */
+}
+
+.team-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.team-away {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.team-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.team-flag-img {
+  font-size: 30px;
+  border-radius: 3px;
+  display: block;
+  flex-shrink: 0;
+}
+
 .score-zone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+
+.score-zoneXX {
   display: flex;
   align-items: center;
   gap: 0px;
   flex-shrink: 0;
 }
 .score-input {
-  width: 45px; height: 30px;
+  width: 45px; height: 40px;
   text-align: center;
   font-size: 15px; font-weight: 400;
   border: 2px solid var(--border);
