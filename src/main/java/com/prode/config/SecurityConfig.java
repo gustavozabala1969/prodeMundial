@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Endpoints públicos
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/", "/index.html", "/login.html", "/register.html",
-                             "/css/**", "/js/**", "/*.ico").permitAll()
+                             "/css/**", "/js/**", "/*.ico", "/health").permitAll()
                 // Admin
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 // Todo lo demás requiere autenticación
