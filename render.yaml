@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: prodemundial-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+
+    # Health check — Render considera el servicio "vivo" cuando este endpoint responde 200
+    healthCheckPath: /health
+
+    # Variables de entorno (editá los valores en el dashboard de Render)
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: false
+      - key: SPRING_DATASOURCE_USERNAME
+        value: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false   # Render te pide el valor de forma segura, no queda en el repo
+      - key: JWT_SECRET
+        sync: false
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: "8080"
